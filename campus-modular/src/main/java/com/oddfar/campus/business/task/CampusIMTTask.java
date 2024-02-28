@@ -25,7 +25,7 @@ public class CampusIMTTask {
 
 
     /**
-     * 1：10 批量修改用户随机预约的时间
+     * 1:10 批量修改用户随机预约的时间
      */
     @Async
     @Scheduled(cron = "0 10 1 ? * * ")

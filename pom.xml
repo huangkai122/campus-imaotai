@@ -18,6 +18,7 @@
         <module>campus-framework</module>
         <module>campus-admin</module>
         <module>campus-modular</module>
+        <module>campus-weixin</module>
     </modules>
 
     <properties>

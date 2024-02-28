@@ -21,7 +21,7 @@ spring:
           # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能(对数据库有性能损耗 使用批量操作应考虑性能问题)
           url: jdbc:mysql://localhost:3306/campus_imaotai?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
           username: root
-          password: 123456789
+          password: root
         # 从库数据源
       #        slave:
       #          lazy: true
@@ -62,3 +62,16 @@ spring:
     # password:
     # 连接超时时间
     timeout: 10s
+
+#微信公众号
+wx:
+  #  appid: wx818c97552eb51fe5
+  #  appSecret: b686414c1708c33fb118af105ebd3316
+  #  token: E78Inc
+  #  aesKey:
+
+  appid: wxa2e008fa130909a5
+  appSecret: 826e6e5762b47568e77f586e9012e765
+  token: b2asaX4dl5DSxUxC
+  aesKey: 59qrjDxeDJdiWQRvj7moJrmpzQI96hlnvZllDgHzLYK
+  templateId: uCoFQpqp00W7eR3VdlAxcH6o7SKmcVEsdGssMtLhQVY

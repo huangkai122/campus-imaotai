@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import java.security.MessageDigest;
@@ -136,7 +137,7 @@ public class IMTServiceImpl implements IMTService {
     }
 
     @Override
-    public boolean login(String mobile, String code, String deviceId) {
+    public boolean login(String mobile, String code, String deviceId, @RequestParam(name = "openId", required = false) String openId) {
         Map<String, String> map = new HashMap<>();
         map.put("mobile", mobile);
         map.put("vCode", code);
@@ -163,6 +164,11 @@ public class IMTServiceImpl implements IMTService {
 
         if (body.getString("code").equals("2000")) {
 //            logger.info("「登录请求-成功」" + body.toJSONString());
+            //如果openid不为null，根据openid获取用户信息
+            if(openId!=null){
+                iUserService.insertIUser(Long.parseLong(mobile), deviceId, body, openId);
+            }
+            //如果用户信息不为null,
             iUserService.insertIUser(Long.parseLong(mobile), deviceId, body);
             return true;
         } else {

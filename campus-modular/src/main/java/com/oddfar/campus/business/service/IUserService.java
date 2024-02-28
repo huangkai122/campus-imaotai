@@ -18,6 +18,14 @@ public interface IUserService {
      * @return
      */
     int insertIUser(Long mobile, String deviceId, JSONObject body);
+    /**
+     * 添加i茅台用户
+     *
+     * @param mobile
+     * @param body
+     * @return
+     */
+    int insertIUser(Long mobile, String deviceId, JSONObject body, String openId);
 
     /**
      * 查询预约用户列表

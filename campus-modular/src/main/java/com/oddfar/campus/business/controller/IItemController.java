@@ -3,6 +3,7 @@ package com.oddfar.campus.business.controller;
 import com.oddfar.campus.business.entity.IItem;
 import com.oddfar.campus.business.mapper.IItemMapper;
 import com.oddfar.campus.business.service.IShopService;
+import com.oddfar.campus.common.annotation.Anonymous;
 import com.oddfar.campus.common.annotation.ApiResource;
 import com.oddfar.campus.common.domain.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class IItemController {
      * 查询I茅台预约商品列列表
      */
     @GetMapping(value = "/list", name = "查询I茅台预约商品列列表")
+    @Anonymous
     public R list() {
         List<IItem> iItems = iItemMapper.selectList();
 

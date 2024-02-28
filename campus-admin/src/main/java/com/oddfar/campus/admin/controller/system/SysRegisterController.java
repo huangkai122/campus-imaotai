@@ -33,8 +33,18 @@ public class SysRegisterController {
         if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser")))) {
             return R.error("当前系统没有开启注册功能！");
         }
+
         String msg = registerService.register(user);
-        return StringUtils.isEmpty(msg) ? R.ok() : R.error(msg);
+        if (StringUtils.isEmpty(msg)) {
+            //默认权限
+            SysUserEntity sysUser = userService.selectUserByUserName(user.getUsername());
+            Long userId = sysUser.getUserId();
+            Long[] roleIds = new Long[]{1685558345957654529L};
+            userService.insertUserAuth(userId, roleIds);
+            return R.ok();
+        }else{
+            return R.error(msg);
+        }
     }
 
     @Anonymous

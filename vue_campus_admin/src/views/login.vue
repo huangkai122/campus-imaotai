@@ -56,7 +56,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2023 oddfar.com All Rights Reserved.</span>
+      <span>Copyright © 2023 shequ119.com All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -91,7 +91,7 @@ export default {
       // 验证码开关
       captchaEnabled: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     };
   },

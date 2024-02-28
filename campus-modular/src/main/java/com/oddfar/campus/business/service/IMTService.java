@@ -1,6 +1,8 @@
 package com.oddfar.campus.business.service;
 
 import com.oddfar.campus.business.entity.IUser;
+import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface IMTService {
     /**
@@ -31,7 +33,7 @@ public interface IMTService {
      * @param deviceId 设备id
      * @return
      */
-    boolean login(String mobile, String code, String deviceId);
+    boolean login(String mobile, String code, String deviceId, String openId);
 
     /**
      * 预约

@@ -3,6 +3,7 @@ package com.oddfar.campus.business.controller;
 import com.oddfar.campus.business.entity.IShop;
 import com.oddfar.campus.business.mapper.IShopMapper;
 import com.oddfar.campus.business.service.IShopService;
+import com.oddfar.campus.common.annotation.Anonymous;
 import com.oddfar.campus.common.annotation.ApiResource;
 import com.oddfar.campus.common.domain.PageResult;
 import com.oddfar.campus.common.domain.R;
@@ -32,6 +33,7 @@ public class IShopController {
      * 查询i茅台商品列表
      */
     @GetMapping("/list")
+    @Anonymous
     public R list(IShop iShop) {
         PageResult<IShop> page = iShopMapper.selectPage(iShop);
 

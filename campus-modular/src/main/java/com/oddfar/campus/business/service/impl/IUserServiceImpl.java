@@ -3,7 +3,9 @@ package com.oddfar.campus.business.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.oddfar.campus.business.entity.IUser;
+import com.oddfar.campus.business.entity.IWechat;
 import com.oddfar.campus.business.mapper.IUserMapper;
+import com.oddfar.campus.business.mapper.IWechatMapper;
 import com.oddfar.campus.business.service.IUserService;
 import com.oddfar.campus.common.domain.PageResult;
 import com.oddfar.campus.common.exception.ServiceException;
@@ -12,6 +14,7 @@ import com.oddfar.campus.common.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +23,8 @@ import java.util.UUID;
 public class IUserServiceImpl implements IUserService {
     @Autowired
     private IUserMapper iUserMapper;
+    @Autowired
+    private IWechatMapper iWechatMapper;
 
     @Override
     public PageResult<IUser> page(IUser iUser) {
@@ -31,6 +36,45 @@ public class IUserServiceImpl implements IUserService {
     }
 
     @Override
+    public int insertIUser(Long mobile, String deviceId, JSONObject jsonObject, String openId) {
+        IWechat wechat = iWechatMapper.selectOne("open_id", openId);
+
+        if (wechat !=null){
+            IWechat iwechat = new IWechat();
+            iwechat.setId(wechat.getId());
+            iwechat.setUserMobile(mobile);
+            iWechatMapper.updateById(iwechat);
+        }else{
+            IWechat iwechat = new IWechat();
+            iwechat.setUserMobile(mobile);
+            iwechat.setOpenId(openId);
+            iWechatMapper.insert(iwechat);
+        }
+
+
+        JSONObject data = jsonObject.getJSONObject("data");
+
+        IUser user = iUserMapper.selectById(mobile);
+
+        if (user != null) {
+            //存在则更新
+            IUser iUser = new IUser(mobile, jsonObject);
+//            iUser.setCreateUser(SecurityUtils.getUserId());
+            iUser.setPushPlusToken(openId);
+            BeanUtil.copyProperties(iUser, user, "shopType", "minute");
+            return iUserMapper.updateById(user);
+        } else {
+            if (StringUtils.isEmpty(deviceId)) {
+                deviceId = UUID.randomUUID().toString().toLowerCase();
+            }
+            IUser iUser = new IUser(mobile, deviceId, jsonObject);
+//            iUser.setCreateUser(SecurityUtils.getUserId());
+            iUser.setPushPlusToken(openId);
+            return iUserMapper.insert(iUser);
+        }
+    }
+
+    @Override
     public int insertIUser(Long mobile, String deviceId, JSONObject jsonObject) {
         JSONObject data = jsonObject.getJSONObject("data");
 
@@ -39,7 +83,7 @@ public class IUserServiceImpl implements IUserService {
         if (user != null) {
             //存在则更新
             IUser iUser = new IUser(mobile, jsonObject);
-            iUser.setCreateUser(SecurityUtils.getUserId());
+//            iUser.setCreateUser(SecurityUtils.getUserId());
             BeanUtil.copyProperties(iUser, user, "shopType", "minute");
             return iUserMapper.updateById(user);
         } else {
@@ -47,7 +91,7 @@ public class IUserServiceImpl implements IUserService {
                 deviceId = UUID.randomUUID().toString().toLowerCase();
             }
             IUser iUser = new IUser(mobile, deviceId, jsonObject);
-            iUser.setCreateUser(SecurityUtils.getUserId());
+//            iUser.setCreateUser(SecurityUtils.getUserId());
             return iUserMapper.insert(iUser);
         }
 
