@@ -142,4 +142,9 @@ public class IUserServiceImpl implements IUserService {
     public int deleteIUser(Long[] iUserId) {
         return iUserMapper.deleteIUser(iUserId);
     }
+
+    @Override
+    public List<IUser> getExpireUser() {
+        return iUserMapper.selectExpireTimeUser();
+    }
 }

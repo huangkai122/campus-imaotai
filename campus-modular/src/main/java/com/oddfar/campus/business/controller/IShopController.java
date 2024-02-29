@@ -1,5 +1,6 @@
 package com.oddfar.campus.business.controller;
 
+import com.oddfar.campus.business.entity.ILog;
 import com.oddfar.campus.business.entity.IShop;
 import com.oddfar.campus.business.mapper.IShopMapper;
 import com.oddfar.campus.business.service.IShopService;
@@ -49,6 +50,16 @@ public class IShopController {
     public R refreshShop() {
         iShopService.refreshShop();
         return R.ok();
+    }
+
+    @GetMapping(value = "/shopInfo", name = "门店详情")
+    @Anonymous
+    public R shopInfo(Long shopId){
+        if(shopId==null){
+            return R.error("参数错误");
+        }
+        IShop iShop = iShopMapper.selectById(shopId);
+        return R.ok(iShop);
     }
 
 }

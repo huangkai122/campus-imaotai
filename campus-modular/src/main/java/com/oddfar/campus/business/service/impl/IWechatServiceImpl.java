@@ -69,4 +69,9 @@ public class IWechatServiceImpl implements IWechatService {
             return e.getMessage();
         }
     }
+
+    @Override
+    public IWechat getWechatInfo(String openId) {
+        return iWechatMapper.selectOne("open_id", openId);
+    }
 }

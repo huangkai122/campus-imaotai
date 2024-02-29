@@ -71,4 +71,9 @@ public interface IUserService {
      * @return
      */
     int deleteIUser(Long[] iUserId);
+
+    /**
+     * 获取token3天内到期的用户
+     */
+    List<IUser> getExpireUser();
 }

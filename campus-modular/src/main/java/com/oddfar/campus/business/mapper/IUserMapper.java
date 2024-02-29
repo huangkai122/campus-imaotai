@@ -6,6 +6,10 @@ import com.oddfar.campus.common.core.LambdaQueryWrapperX;
 import com.oddfar.campus.common.domain.PageResult;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +52,24 @@ public interface IUserMapper extends BaseMapperX<IUser> {
                         .ne(IUser::getItemCode, "")
                         .isNotNull(IUser::getItemCode)
 
+        );
+
+    }
+
+    /**
+     * 查询token3天内过期的用户
+     * @return
+     */
+    default List<IUser> selectExpireTimeUser() {
+        LocalDateTime threeDaysLater = LocalDateTime.now().plusDays(3);
+        Date threeDaysLaterDate = Date.from(threeDaysLater.atZone(ZoneId.systemDefault()).toInstant());
+
+        LocalDateTime currentDate = LocalDateTime.now();
+        Date currentDateDate = Date.from(currentDate.atZone(ZoneId.systemDefault()).toInstant());
+
+
+        return selectList(new LambdaQueryWrapperX<IUser>()
+                .between(IUser::getExpireTime, currentDateDate, threeDaysLaterDate)
         );
 
     }

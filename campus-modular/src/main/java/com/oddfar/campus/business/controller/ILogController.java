@@ -44,6 +44,16 @@ public class ILogController {
         return R.ok().put(page);
     }
 
+    @GetMapping(value = "/logInfo", name = "日志详情")
+    @Anonymous
+    public R logInfo(Long logId){
+        if(logId==null){
+            return R.error("参数错误");
+        }
+        ILog iLog = logMapper.selectById(logId);
+        return R.ok(iLog);
+    }
+
 
     @PreAuthorize("@ss.resourceAuth()")
     @DeleteMapping(value = "/{operIds}", name = "操作日志-删除")

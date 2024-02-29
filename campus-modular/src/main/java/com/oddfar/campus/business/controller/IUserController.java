@@ -2,13 +2,18 @@ package com.oddfar.campus.business.controller;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.oddfar.campus.business.config.WxMpConfig;
 import com.oddfar.campus.business.entity.IShop;
 import com.oddfar.campus.business.entity.IUser;
+import com.oddfar.campus.business.entity.IWechat;
 import com.oddfar.campus.business.mapper.IUserMapper;
 import com.oddfar.campus.business.service.IMTService;
 import com.oddfar.campus.business.service.IShopService;
 import com.oddfar.campus.business.service.IUserService;
+import com.oddfar.campus.business.service.IWechatService;
 import com.oddfar.campus.common.annotation.Anonymous;
 import com.oddfar.campus.common.annotation.ApiResource;
 import com.oddfar.campus.common.domain.PageResult;
@@ -19,6 +24,9 @@ import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * I茅台用户Controller
@@ -40,6 +48,8 @@ public class IUserController {
     private IShopService iShopService;
     @Autowired
     private WxMpConfig wxMpConfig;
+    @Autowired
+    private IWechatService iWechatService;
 
     /**
      * 查询I茅台用户列表
@@ -109,6 +119,24 @@ public class IUserController {
         imtService.login(mobile, code, deviceId, openId);
 
         return R.ok();
+    }
+
+    /**
+     * 通过openid获取用户信息
+     */
+    @GetMapping(value = "/getInfo", name = "获取I茅台用户详细信息")
+    @Anonymous
+    public R getInfoByOpenId(String openid) {
+        R r = new R();
+        IWechat wechatInfo = iWechatService.getWechatInfo(openid);
+        if(wechatInfo==null || wechatInfo.getUserMobile()==null){
+            Map<String, Object> map = new HashMap<>();
+            map.put("data",null);
+            map.put("msg","查不到用户信息");
+            return R.ok(map);
+        }
+        Long mobile = wechatInfo.getUserMobile();
+        return R.ok(iUserMapper.selectById(mobile));
     }
 
 
@@ -184,25 +212,42 @@ public class IUserController {
         return R.ok(iUserMapper.deleteIUser(mobiles));
     }
 
-    @PostMapping(value = "/getOpenid")
-    public R getOpenid(String code){
-        String body=null;
-        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+wxMpConfig.getAppid()
-                +"&secret="+wxMpConfig.getAppSecret()+"&js_code="+code+"&grant_type=authorization_code";
-        HttpRequest httpRequest = HttpRequest.get(url);
-        HttpResponse response = httpRequest.execute();
-        if(response.isOk()){
-            body = response.body().toString();
-            System.out.println(body);
+    @GetMapping(value = "/getWechatInfo")
+    @Anonymous
+    public R getWechatInfo(String code){
+        try {
+            String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + wxMpConfig.getAppid() + "&secret=" + wxMpConfig.getAppSecret() + "&code=" + code + "&grant_type=authorization_code";
+            HttpRequest httpRequest = HttpRequest.get(url);
+            HttpResponse response = httpRequest.execute();
+            if (response.isOk()) {
+                String body = response.body().toString();
+                JSONObject jsonObject = JSONUtil.parseObj(body);
+                System.out.println(body);
+                String openid = jsonObject.getStr("openid");
+                if(openid!=null){
+                    IWechat wechat = new IWechat();
+                    wechat.setOpenId(openid);
+                    iWechatService.insertIWechat(wechat);
+
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("data",openid);
+                    map.put("msg","查询成功");
+                    return R.ok(map);
+                }else{
+                    return R.error("获取openid失败");
+                }
+            } else {
+                return R.error("获取openid失败");
+            }
+        }catch (Exception e){
+            return R.error(e.getMessage());
         }
-        return R.ok(body);
     }
 
     @GetMapping(value = "/getCode")
+    @Anonymous
     public R getCode(String code){
-        System.out.println(code);
-        R openid = getOpenid(code);
-        System.out.println(openid);
-        return  R.ok(openid);
+        R wechatInfo = getWechatInfo(code);
+        return  R.ok(wechatInfo);
     }
 }

@@ -1,5 +1,8 @@
 package com.oddfar.campus.business.controller;
 
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.oddfar.campus.business.api.WechatPlusApi;
 import com.oddfar.campus.business.config.WxMpConfig;
@@ -80,46 +83,10 @@ public class TestController {
     @Anonymous
     @GetMapping(value = "/3", name = "测试3的接口")
     public R test3() {
-//        iShopService.selectShopList();
-        IUser user = iUserMapper.selectById("13663511605");
-        ILog iLog = logMapper.selectById("1759022417832337410");
-        WechatPlusApi.sendNotice(user,iLog);
+        IUser iUser = iUserMapper.selectById("13663511605");
+        ILog iLog = logMapper.selectOne("log_id", "1762678509904875521");
 
-
-//        String title, content;
-//        if (iLog.getStatus() == 0) {
-//            //预约成功
-//            title = user.getRemark() + "-i茅台执行成功";
-//            content = user.getMobile() + System.lineSeparator() + iLog.getLogContent();
-//        } else {
-//            //预约失败
-//            title = user.getRemark() + "-i茅台执行失败";
-//            content = user.getMobile() + System.lineSeparator() + iLog.getLogContent();
-//        }
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Date currentDate = new Date();
-//
-////        WechatPlusApi.sendNotice(user, iLog);
-////        WechatPlusApi wechatPlusApi = new WechatPlusApi();
-////        wechatPlusApi.sendNotice(user, iLog);
-//
-//        WeChatMpTemplateMsg template = new WeChatMpTemplateMsg();
-//        template.setTemplateId(wxMpConfig.getTemplateId());
-//
-//
-//
-//
-//
-//        Map<String, WechatMpTemplateMsgField> map=new HashMap<>();
-//        map.put("thing8",new WechatMpTemplateMsgField("thing8", title));
-//        map.put("time6",new WechatMpTemplateMsgField("time6", sdf.format(currentDate)));
-//        map.put("thing10",new WechatMpTemplateMsgField("thing10", user.getMobile().toString()));
-//
-//        template.setFieldMap(map);
-//
-//        template.setUrl("https://imaotai.shequ119.com");
-//        String s = wechatService.sendTemplateMessage(user.getPushPlusToken(), template);
-//        System.out.println(s);
+        WechatPlusApi.sendNotice(iUser,iLog);
 
         return R.ok();
     }

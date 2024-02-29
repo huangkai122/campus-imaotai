@@ -27,4 +27,6 @@ public interface IWechatService {
     int updateIWechat(IWechat iWechat);
     String sendTemplateMessage(String toUserOpenId, WeChatMpTemplateMsg template);
 
+    IWechat getWechatInfo(String openId);
+
 }

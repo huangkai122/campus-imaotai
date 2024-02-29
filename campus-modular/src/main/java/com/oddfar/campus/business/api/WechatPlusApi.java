@@ -35,44 +35,54 @@ public class WechatPlusApi {
         if (StringUtils.isEmpty(token)) {
             return;
         }
-        String title, content, mobile;
+        String title, content, url, mobile;
+        String templateId = SpringUtils.getBean(WxMpConfig.class).getTemplateId();
         if (operLog.getStatus() == 0) {
             //预约成功
             title = iUser.getRemark() + "-i茅台执行成功";
-            content = iUser.getMobile() + System.lineSeparator() + operLog.getLogContent();
-            mobile = iUser.getMobile().toString();
-            AsyncManager.me().execute(sendNotice(token, title, content, mobile));
+//            content = iUser.getMobile() + System.lineSeparator() + operLog.getLogContent();
+            url = "https://imaotai.shequ119.com";
+            AsyncManager.me().execute(sendNotice(iUser, title, url, templateId));
         } else {
             //预约失败
             title = iUser.getRemark() + "-i茅台执行失败";
-            content = iUser.getMobile() + System.lineSeparator() + operLog.getLogContent();
-            mobile = iUser.getMobile().toString();
-            AsyncManager.me().execute(sendNotice(token, title, content, mobile));
+//            content = iUser.getMobile() + System.lineSeparator() + operLog.getLogContent();
+            url = "https://imaotai.shequ119.com";
+            AsyncManager.me().execute(sendNotice(iUser, title, url, templateId));
         }
 
 
     }
 
 
-    public static TimerTask sendNotice(String token, String title, String content, String mobile) {
+    public static TimerTask sendNotice(IUser iUser, String title, String url, String templateId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date currentDate = new Date();
 
         WeChatMpTemplateMsg template = new WeChatMpTemplateMsg();
-        template.setTemplateId(SpringUtils.getBean(WxMpConfig.class).getTemplateId());
+        template.setTemplateId(templateId);
 
         Map<String, WechatMpTemplateMsgField> map=new HashMap<>();
-        map.put("thing8",new WechatMpTemplateMsgField("thing8", title));
-        map.put("time6",new WechatMpTemplateMsgField("time6", sdf.format(currentDate)));
-        map.put("thing10",new WechatMpTemplateMsgField("thing10", mobile));
-
+        if (templateId.equals(SpringUtils.getBean(WxMpConfig.class).getTemplateId())) {
+            map.put("thing8", new WechatMpTemplateMsgField("thing8", title));
+            map.put("time6", new WechatMpTemplateMsgField("time6", sdf.format(currentDate)));
+            map.put("thing10", new WechatMpTemplateMsgField("thing10", iUser.getMobile().toString()));
+        }else{
+            map.put("character_string14", new WechatMpTemplateMsgField("character_string14", iUser.getMobile().toString()));
+            map.put("thing6", new WechatMpTemplateMsgField("thing6", title));
+            map.put("thing4", new WechatMpTemplateMsgField("thing4", "高"));
+            map.put("time5", new WechatMpTemplateMsgField("time5", sdf.format(iUser.getExpireTime())));
+        }
         template.setFieldMap(map);
 
-        template.setUrl("https://imaotai.shequ119.com");
+        if(url!=null) {
+            template.setUrl(url);
+        }
+
         return new TimerTask() {
             @Override
             public void run() {
-                SpringUtils.getBean(IWechatService.class).sendTemplateMessage(token, template);
+                SpringUtils.getBean(IWechatService.class).sendTemplateMessage(iUser.getPushPlusToken(), template);
             }
         };
     }
